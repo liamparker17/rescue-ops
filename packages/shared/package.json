@@ -1,0 +1,22 @@
+{
+  "name": "@rescue-ops/shared",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "build": "echo 'no build step — consumed as TypeScript'",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@sentry/nextjs": "^10",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "vitest": "^2"
+  },
+  "peerDependencies": {
+    "@rescue-ops/database": "*",
+    "next": "^15"
+  }
+}
