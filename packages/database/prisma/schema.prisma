@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organisation {
+  id             String   @id @default(cuid())
+  name           String
+  registrationNo String?
+  sector         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  contacts  Contact[]
+  balances  OpeningBalance[]
+  tasks     OperationalTask[]
+  creditors Creditor[]
+  auditLogs AuditLog[]
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  orgId     String
+  name      String
+  role      String?
+  email     String?
+  phone     String?
+  company   String?
+  createdAt DateTime @default(now())
+
+  org       Organisation      @relation(fields: [orgId], references: [id])
+  tasks     OperationalTask[]
+  creditors Creditor[]
+
+  @@index([orgId])
+}
+
+model OpeningBalance {
+  id             String      @id @default(cuid())
+  orgId          String
+  accountCode    String
+  accountName    String
+  accountType    AccountType
+  balanceInCents Int
+  asAtDate       DateTime
+  createdAt      DateTime    @default(now())
+
+  org Organisation @relation(fields: [orgId], references: [id])
+
+  @@unique([orgId, accountCode])
+  @@index([orgId])
+}
+
+enum AccountType {
+  Asset
+  Liability
+  Equity
+  Revenue
+  Expense
+}
+
+model OperationalTask {
+  id            String       @id @default(cuid())
+  orgId         String
+  taskNumber    Int
+  title         String
+  description   String
+  priority      TaskPriority
+  status        TaskStatus   @default(Open)
+  responsibleId String?
+  dueDate       DateTime?
+  completedAt   DateTime?
+  cancelReason  String?
+  cancelledAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  org         Organisation @relation(fields: [orgId], references: [id])
+  responsible Contact?     @relation(fields: [responsibleId], references: [id])
+
+  @@unique([orgId, taskNumber])
+  @@index([orgId])
+  @@index([orgId, status])
+}
+
+enum TaskPriority {
+  Critical
+  High
+  Normal
+}
+
+enum TaskStatus {
+  Open
+  InProgress
+  Completed
+  Cancelled
+}
+
+model TaskSequence {
+  id      String @id @default(cuid())
+  orgId   String @unique
+  lastSeq Int    @default(0)
+}
+
+model Creditor {
+  id                 String        @id @default(cuid())
+  orgId              String
+  creditorName       String
+  claimAmountInCents Int
+  securityType       SecurityType
+  stage              CreditorStage @default(Identified)
+  contactId          String?
+  lastContactDate    DateTime?
+  votingStatus       VotingStatus  @default(Pending)
+  notes              String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  org            Organisation            @relation(fields: [orgId], references: [id])
+  contact        Contact?                @relation(fields: [contactId], references: [id])
+  communications CreditorCommunication[]
+
+  @@index([orgId, stage])
+  @@index([orgId])
+}
+
+enum SecurityType {
+  Secured
+  Preferent
+  Concurrent
+}
+
+enum CreditorStage {
+  Identified
+  Notified
+  InNegotiation
+  OfferMade
+  Agreed
+  Voted
+}
+
+enum VotingStatus {
+  Pending
+  For
+  Against
+  Abstained
+}
+
+model CreditorCommunication {
+  id         String   @id @default(cuid())
+  creditorId String
+  method     String
+  summary    String
+  date       DateTime
+  createdAt  DateTime @default(now())
+
+  creditor Creditor @relation(fields: [creditorId], references: [id])
+
+  @@index([creditorId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  orgId      String
+  action     String
+  entityType String
+  entityId   String?
+  changes    Json?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  org Organisation @relation(fields: [orgId], references: [id])
+
+  @@index([orgId])
+  @@index([orgId, entityType])
+  @@index([orgId, createdAt])
+  @@index([entityType, entityId])
+}
