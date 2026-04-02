@@ -25,7 +25,7 @@ export function Header({ onNewCreditor, onExportPdf, pdfLoading }: HeaderProps) 
           direction="left"
         />
         <CrossLink
-          href={process.env.NEXT_PUBLIC_OPERATIONS_URL}
+          href={process.env.NEXT_PUBLIC_OPS_URL}
           label="Operations"
           direction="left"
         />

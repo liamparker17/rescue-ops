@@ -19,6 +19,11 @@ export function Header({ orgName, onAddBalance }: HeaderProps) {
       </div>
       <div className="flex items-center gap-6">
         <CrossLink
+          href={process.env.NEXT_PUBLIC_OPS_URL}
+          label="Operations"
+          direction="right"
+        />
+        <CrossLink
           href={process.env.NEXT_PUBLIC_PIPELINE_URL}
           label="Creditor Pipeline"
           direction="right"
