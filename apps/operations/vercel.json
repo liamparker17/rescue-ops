@@ -1,6 +1,5 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd ../.. && npm install",
   "outputDirectory": ".next",
   "functions": {
     "app/api/**/*.ts": {
