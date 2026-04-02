@@ -1,4 +1,4 @@
-import { PrismaClient, AccountType, TaskPriority, TaskStatus, SecurityType, CreditorStage, VotingStatus } from "../generated/client";
+import { PrismaClient, AccountType, TaskPriority, TaskStatus, SecurityType, CreditorStage, VotingStatus } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
