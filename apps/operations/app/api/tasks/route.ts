@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const priority = req.nextUrl.searchParams.get("priority");
     const search = req.nextUrl.searchParams.get("search");
 
-    const where: Prisma.OperationalTaskWhereInput = { orgId: DEFAULT_ORG_ID };
+    const where = { orgId: DEFAULT_ORG_ID };
     if (status) where.status = status as Prisma.EnumTaskStatusFilter["equals"];
     if (priority) where.priority = priority as Prisma.EnumTaskPriorityFilter["equals"];
     if (search) {
@@ -93,3 +93,4 @@ export async function POST(req: NextRequest) {
     return handleApiError(error);
   }
 }
+
