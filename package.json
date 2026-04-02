@@ -1,0 +1,25 @@
+{
+  "name": "rescue-ops",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:triage": "turbo run dev --filter=@rescue-ops/financial-triage",
+    "dev:ops": "turbo run dev --filter=@rescue-ops/operations",
+    "dev:pipeline": "turbo run dev --filter=@rescue-ops/creditor-pipeline",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:generate": "turbo run db:generate --filter=@rescue-ops/database",
+    "db:push": "turbo run db:push --filter=@rescue-ops/database",
+    "db:migrate": "turbo run db:migrate --filter=@rescue-ops/database",
+    "db:seed": "turbo run db:seed --filter=@rescue-ops/database"
+  },
+  "devDependencies": {
+    "turbo": "^2"
+  },
+  "packageManager": "npm@10.8.0"
+}
