@@ -1,0 +1,29 @@
+{
+  "name": "@rescue-ops/operations",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3002",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@rescue-ops/database": "*",
+    "@rescue-ops/shared": "*",
+    "@react-pdf/renderer": "^4",
+    "@sentry/nextjs": "^10",
+    "next": "^15",
+    "react": "^19",
+    "react-dom": "^19",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10",
+    "tailwindcss": "^3",
+    "typescript": "^5"
+  }
+}
