@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { TASK_PRIORITY_ORDER } from "@rescue-ops/shared";
+import { TASK_PRIORITY_ORDER, FirstVisitHint, MetricCardSkeleton, TableRowSkeleton } from "@rescue-ops/shared";
 import { Header } from "@components/Header";
 import { StatsRow } from "@components/StatsRow";
 import { FilterBar } from "@components/FilterBar";
@@ -138,14 +138,29 @@ export default function OperationsPage() {
 
   if (loading) {
     return (
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="text-center py-20 text-slate-400">Loading...</div>
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="h-7 w-48 bg-slate-200 rounded animate-pulse mb-2" />
+            <div className="h-4 w-64 bg-slate-200 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <MetricCardSkeleton key={i} />
+          ))}
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <TableRowSkeleton key={i} />
+          ))}
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-8">
+    <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
       <Header onNewTask={handleNewTask} />
 
       <StatsRow
@@ -168,6 +183,8 @@ export default function OperationsPage() {
         tasks={filteredTasks}
         onEdit={handleEdit}
         onPrint={handlePrint}
+        hasFilters={!!(statusFilter || priorityFilter || searchQuery)}
+        onClearFilters={() => { setStatusFilter(""); setPriorityFilter(""); setSearchQuery(""); }}
       />
 
       <SlideOver
@@ -182,6 +199,24 @@ export default function OperationsPage() {
           onClose={() => { setSlideOpen(false); setEditingTask(null); }}
         />
       </SlideOver>
+
+      {/* Mobile FAB */}
+      <div className="fixed bottom-20 right-4 z-40 md:hidden relative">
+        <button
+          onClick={() => setSlideOpen(true)}
+          className="w-14 h-14 bg-accent text-white rounded-full shadow-lg flex items-center justify-center animate-scale-in active:scale-95 transition-transform"
+          aria-label="New Task"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+        <FirstVisitHint
+          storageKey="rescue-ops-ops-hints-seen"
+          message="Tap + to create your first task"
+          position="top"
+        />
+      </div>
     </main>
   );
 }

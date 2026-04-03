@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { CREDITOR_STAGES } from "@rescue-ops/shared";
+import { CREDITOR_STAGES, MetricCardSkeleton, CardSkeleton } from "@rescue-ops/shared";
 import { Header } from "@components/Header";
 import { StatsRow } from "@components/StatsRow";
 import { KanbanBoard } from "@components/KanbanBoard";
@@ -223,14 +223,29 @@ export default function CreditorPipelinePage() {
 
   if (loading) {
     return (
-      <main className="max-w-[1600px] mx-auto px-6 py-8">
-        <div className="text-center py-20 text-slate-400">Loading...</div>
+      <main className="max-w-[1600px] mx-auto px-4 md:px-6 py-6 md:py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="h-7 w-48 bg-slate-200 rounded animate-pulse mb-2" />
+            <div className="h-4 w-64 bg-slate-200 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <MetricCardSkeleton key={i} />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <CardSkeleton key={i} />
+          ))}
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="max-w-[1600px] mx-auto px-6 py-8">
+    <main className="max-w-[1600px] mx-auto px-4 md:px-6 py-6 md:py-8">
       <Header
         onNewCreditor={handleNewCreditor}
         onExportPdf={handleExportPdf}

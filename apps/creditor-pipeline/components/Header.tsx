@@ -1,4 +1,5 @@
 import { CrossLink } from "./CrossLink";
+import { HamburgerMenu, HamburgerItem } from "@rescue-ops/shared";
 
 interface HeaderProps {
   onNewCreditor: () => void;
@@ -7,28 +8,25 @@ interface HeaderProps {
 }
 
 export function Header({ onNewCreditor, onExportPdf, pdfLoading }: HeaderProps) {
+  const triageUrl = process.env.NEXT_PUBLIC_TRIAGE_URL;
+  const opsUrl = process.env.NEXT_PUBLIC_OPS_URL;
+
   return (
     <header className="flex items-center justify-between mb-8">
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-slate-900">Creditor Pipeline</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-slate-900">Creditor Pipeline</h1>
           <span className="text-xs font-medium px-2 py-1 rounded-full bg-indigo-50 text-accent">
             rescue-ops
           </span>
         </div>
         <p className="text-sm text-slate-500 mt-1">Mpumalanga Steel Fabricators (Pty) Ltd</p>
       </div>
-      <div className="flex items-center gap-6">
-        <CrossLink
-          href={process.env.NEXT_PUBLIC_TRIAGE_URL}
-          label="Financial Triage"
-          direction="left"
-        />
-        <CrossLink
-          href={process.env.NEXT_PUBLIC_OPS_URL}
-          label="Operations"
-          direction="left"
-        />
+
+      {/* Desktop nav */}
+      <div className="hidden md:flex items-center gap-6">
+        <CrossLink href={triageUrl} label="Financial Triage" direction="left" />
+        <CrossLink href={opsUrl} label="Operations" direction="left" />
         <button
           onClick={onExportPdf}
           disabled={pdfLoading}
@@ -48,6 +46,24 @@ export function Header({ onNewCreditor, onExportPdf, pdfLoading }: HeaderProps) 
         >
           Add Creditor
         </button>
+      </div>
+
+      {/* Mobile: Add Creditor visible, rest in hamburger */}
+      <div className="flex items-center gap-2 md:hidden">
+        <button
+          onClick={onNewCreditor}
+          className="px-3 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          Add Creditor
+        </button>
+        <HamburgerMenu>
+          <HamburgerItem href={triageUrl} disabled={!triageUrl}>Financial Triage</HamburgerItem>
+          <HamburgerItem href={opsUrl} disabled={!opsUrl}>Operations</HamburgerItem>
+          <div className="border-t border-gray-100 my-1" />
+          <HamburgerItem onClick={onExportPdf} disabled={pdfLoading}>
+            {pdfLoading ? "Exporting..." : "Export Summary PDF"}
+          </HamburgerItem>
+        </HamburgerMenu>
       </div>
     </header>
   );

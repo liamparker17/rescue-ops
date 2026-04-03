@@ -4,7 +4,7 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
   ReferenceLine, ReferenceArea,
 } from "recharts";
-import { centsToRand, formatZAR } from "@rescue-ops/shared";
+import { centsToRand, formatZAR, useInView } from "@rescue-ops/shared";
 
 interface RunwayChartProps {
   data: { day: number; balance: number }[];
@@ -12,6 +12,8 @@ interface RunwayChartProps {
 }
 
 export function RunwayChart({ data, runwayDays }: RunwayChartProps) {
+  const [ref, inView] = useInView();
+
   const chartData = data.map((d) => ({
     day: `Day ${d.day}`,
     balance: centsToRand(d.balance),
@@ -21,7 +23,7 @@ export function RunwayChart({ data, runwayDays }: RunwayChartProps) {
   const minBalance = Math.min(...chartData.map((d) => d.balance));
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+    <div ref={ref} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm animate-fade-in-up stagger-1">
       <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-1">
         Cash Runway Projection
       </h3>
@@ -49,6 +51,8 @@ export function RunwayChart({ data, runwayDays }: RunwayChartProps) {
             stroke="#0D9488"
             strokeWidth={2}
             dot={{ r: 4, fill: "#0D9488" }}
+            isAnimationActive={inView}
+            animationDuration={1000}
           />
         </LineChart>
       </ResponsiveContainer>

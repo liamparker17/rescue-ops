@@ -75,6 +75,7 @@ export function CreditorSlideOver({
   const [commSummary, setCommSummary] = useState("");
   const [commDate, setCommDate] = useState(new Date().toISOString().slice(0, 10));
   const [addingComm, setAddingComm] = useState(false);
+  const [showCommForm, setShowCommForm] = useState(false);
 
   async function handleSave() {
     setSaving(true);
@@ -118,7 +119,7 @@ export function CreditorSlideOver({
             type="text"
             value={creditorName}
             onChange={(e) => setCreditorName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
+            className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
           />
         </div>
 
@@ -128,7 +129,7 @@ export function CreditorSlideOver({
             type="number"
             value={claimRand}
             onChange={(e) => setClaimRand(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
+            className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
             min="0"
             step="0.01"
           />
@@ -158,7 +159,7 @@ export function CreditorSlideOver({
           <select
             value={stage}
             onChange={(e) => setStage(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
+            className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
           >
             {CREDITOR_STAGES.map((s) => (
               <option key={s} value={s}>{CREDITOR_STAGE_LABELS[s] || s}</option>
@@ -171,7 +172,7 @@ export function CreditorSlideOver({
           <select
             value={contactId}
             onChange={(e) => setContactId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
+            className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
           >
             <option value="">None</option>
             {contacts.map((c) => (
@@ -205,7 +206,7 @@ export function CreditorSlideOver({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
+            className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
           />
         </div>
 
@@ -228,65 +229,80 @@ export function CreditorSlideOver({
 
       {/* Communication Timeline */}
       <div className="border-t border-gray-200 pt-6">
-        <h3 className="text-sm font-semibold text-slate-900 mb-4">Communication Timeline</h3>
-
-        {/* Add communication form */}
-        <div className="bg-slate-50 rounded-lg p-4 mb-4 space-y-3">
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <input
-                type="date"
-                value={commDate}
-                onChange={(e) => setCommDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
-              />
-            </div>
-            <div>
-              <select
-                value={commMethod}
-                onChange={(e) => setCommMethod(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
-              >
-                {COMMUNICATION_METHODS.map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <textarea
-            value={commSummary}
-            onChange={(e) => setCommSummary(e.target.value)}
-            placeholder="Communication summary..."
-            rows={2}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
-          />
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-slate-900">Communication Timeline</h3>
           <button
-            onClick={handleAddComm}
-            disabled={addingComm || !commSummary.trim()}
-            className="px-3 py-1.5 bg-accent text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+            onClick={() => setShowCommForm(!showCommForm)}
+            className="text-xs font-medium text-accent hover:text-indigo-700 flex items-center gap-1"
           >
-            {addingComm ? "Adding..." : "Add"}
+            {showCommForm ? "Cancel" : "+ Add"}
           </button>
         </div>
 
-        {/* Timeline entries */}
-        <div className="space-y-3">
-          {creditor.communications.map((comm) => (
-            <div key={comm.id} className="flex gap-3 items-start">
-              <div className="text-xs text-slate-400 w-20 flex-shrink-0 pt-0.5">
-                {formatDate(comm.date)}
+        {/* Add communication form — collapsible */}
+        {showCommForm && (
+          <div className="bg-slate-50 rounded-lg p-4 mb-4 space-y-3 animate-fade-in-up">
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <input
+                  type="date"
+                  value={commDate}
+                  onChange={(e) => setCommDate(e.target.value)}
+                  className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
+                />
               </div>
-              <span
-                className={`text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${methodBadgeColors[comm.method] || "bg-gray-100 text-gray-600"}`}
-              >
-                {comm.method}
-              </span>
-              <p className="text-sm text-slate-700 leading-snug">{comm.summary}</p>
+              <div>
+                <select
+                  value={commMethod}
+                  onChange={(e) => setCommMethod(e.target.value)}
+                  className="px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
+                >
+                  {COMMUNICATION_METHODS.map((m) => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+              </div>
             </div>
-          ))}
-          {creditor.communications.length === 0 && (
-            <p className="text-xs text-slate-400 text-center py-4">No communications recorded</p>
+            <textarea
+              value={commSummary}
+              onChange={(e) => setCommSummary(e.target.value)}
+              placeholder="Communication summary..."
+              rows={2}
+              className="w-full px-3 py-2 min-h-[44px] border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
+            />
+            <button
+              onClick={handleAddComm}
+              disabled={addingComm || !commSummary.trim()}
+              className="px-4 py-2 min-h-[44px] bg-accent text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+            >
+              {addingComm ? "Adding..." : "Add Communication"}
+            </button>
+          </div>
+        )}
+
+        {/* Timeline entries with vertical line */}
+        <div className="relative">
+          {creditor.communications.length > 1 && (
+            <div className="absolute left-[39px] top-2 bottom-2 w-px bg-gray-200" />
           )}
+          <div className="space-y-4">
+            {creditor.communications.map((comm) => (
+              <div key={comm.id} className="flex gap-3 items-start relative animate-fade-in-up">
+                <div className="text-xs text-slate-400 w-20 flex-shrink-0 pt-0.5">
+                  {formatDate(comm.date)}
+                </div>
+                <span
+                  className={`text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${methodBadgeColors[comm.method] || "bg-gray-100 text-gray-600"}`}
+                >
+                  {comm.method}
+                </span>
+                <p className="text-sm text-slate-700 leading-snug">{comm.summary}</p>
+              </div>
+            ))}
+            {creditor.communications.length === 0 && (
+              <p className="text-xs text-slate-400 text-center py-4">No communications recorded</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { DashboardSkeleton } from "@rescue-ops/shared";
 import { DashboardClient } from "@components/DashboardClient";
 
 export default function TriagePage() {
@@ -26,14 +27,14 @@ export default function TriagePage() {
 
   if (loading || !data) {
     return (
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="text-center py-20 text-slate-400">Loading...</div>
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <DashboardSkeleton />
       </main>
     );
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-8">
+    <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
       <DashboardClient
         orgName="Mpumalanga Steel Fabricators (Pty) Ltd"
         data={data}

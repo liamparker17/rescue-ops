@@ -75,66 +75,136 @@ export function AddBalanceForm({ onSaved }: AddBalanceFormProps) {
       {error && (
         <div className="bg-rose-50 text-rose-700 px-4 py-2 rounded text-sm">{error}</div>
       )}
+
       {rows.map((row, i) => (
-        <div key={i} className="grid grid-cols-12 gap-2 items-end">
-          <div className="col-span-2">
-            <label className="text-xs text-slate-500">Code</label>
-            <input
-              value={row.accountCode}
-              onChange={(e) => updateRow(i, "accountCode", e.target.value)}
-              className="w-full border rounded px-2 py-1.5 text-sm"
-              placeholder="1000"
-            />
+        <div key={i}>
+          {/* Desktop: grid layout */}
+          <div className="hidden md:grid grid-cols-12 gap-2 items-end">
+            <div className="col-span-2">
+              <label className="text-xs text-slate-500">Code</label>
+              <input
+                value={row.accountCode}
+                onChange={(e) => updateRow(i, "accountCode", e.target.value)}
+                className="w-full border rounded px-2 py-1.5 text-sm"
+                placeholder="1000"
+              />
+            </div>
+            <div className="col-span-3">
+              <label className="text-xs text-slate-500">Name</label>
+              <input
+                value={row.accountName}
+                onChange={(e) => updateRow(i, "accountName", e.target.value)}
+                className="w-full border rounded px-2 py-1.5 text-sm"
+                placeholder="FNB Current"
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="text-xs text-slate-500">Type</label>
+              <select
+                value={row.accountType}
+                onChange={(e) => updateRow(i, "accountType", e.target.value)}
+                className="w-full border rounded px-2 py-1.5 text-sm"
+              >
+                <option>Asset</option>
+                <option>Liability</option>
+                <option>Equity</option>
+                <option>Revenue</option>
+                <option>Expense</option>
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="text-xs text-slate-500">Balance (R)</label>
+              <input
+                type="number"
+                value={row.balance}
+                onChange={(e) => updateRow(i, "balance", e.target.value)}
+                className="w-full border rounded px-2 py-1.5 text-sm"
+                placeholder="340000"
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="text-xs text-slate-500">As At</label>
+              <input
+                type="date"
+                value={row.asAtDate}
+                onChange={(e) => updateRow(i, "asAtDate", e.target.value)}
+                className="w-full border rounded px-2 py-1.5 text-sm"
+              />
+            </div>
+            <div className="col-span-1">
+              <button onClick={() => removeRow(i)} className="text-slate-400 hover:text-rose-500 text-sm">
+                ✕
+              </button>
+            </div>
           </div>
-          <div className="col-span-3">
-            <label className="text-xs text-slate-500">Name</label>
-            <input
-              value={row.accountName}
-              onChange={(e) => updateRow(i, "accountName", e.target.value)}
-              className="w-full border rounded px-2 py-1.5 text-sm"
-              placeholder="FNB Current"
-            />
-          </div>
-          <div className="col-span-2">
-            <label className="text-xs text-slate-500">Type</label>
-            <select
-              value={row.accountType}
-              onChange={(e) => updateRow(i, "accountType", e.target.value)}
-              className="w-full border rounded px-2 py-1.5 text-sm"
+
+          {/* Mobile: stacked card */}
+          <div className="md:hidden border border-gray-200 rounded-lg p-3 space-y-2 relative">
+            <button
+              onClick={() => removeRow(i)}
+              className="absolute top-2 right-2 text-slate-400 hover:text-rose-500 p-1"
             >
-              <option>Asset</option>
-              <option>Liability</option>
-              <option>Equity</option>
-              <option>Revenue</option>
-              <option>Expense</option>
-            </select>
-          </div>
-          <div className="col-span-2">
-            <label className="text-xs text-slate-500">Balance (R)</label>
-            <input
-              type="number"
-              value={row.balance}
-              onChange={(e) => updateRow(i, "balance", e.target.value)}
-              className="w-full border rounded px-2 py-1.5 text-sm"
-              placeholder="340000"
-            />
-          </div>
-          <div className="col-span-2">
-            <label className="text-xs text-slate-500">As At</label>
-            <input
-              type="date"
-              value={row.asAtDate}
-              onChange={(e) => updateRow(i, "asAtDate", e.target.value)}
-              className="w-full border rounded px-2 py-1.5 text-sm"
-            />
-          </div>
-          <div className="col-span-1">
-            <button onClick={() => removeRow(i)} className="text-slate-400 hover:text-rose-500 text-sm">
               ✕
             </button>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-slate-500">Code</label>
+                <input
+                  value={row.accountCode}
+                  onChange={(e) => updateRow(i, "accountCode", e.target.value)}
+                  className="w-full border rounded px-2 py-2 text-sm min-h-[44px]"
+                  placeholder="1000"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-500">Type</label>
+                <select
+                  value={row.accountType}
+                  onChange={(e) => updateRow(i, "accountType", e.target.value)}
+                  className="w-full border rounded px-2 py-2 text-sm min-h-[44px]"
+                >
+                  <option>Asset</option>
+                  <option>Liability</option>
+                  <option>Equity</option>
+                  <option>Revenue</option>
+                  <option>Expense</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-slate-500">Name</label>
+              <input
+                value={row.accountName}
+                onChange={(e) => updateRow(i, "accountName", e.target.value)}
+                className="w-full border rounded px-2 py-2 text-sm min-h-[44px]"
+                placeholder="FNB Current"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-slate-500">Balance (R)</label>
+                <input
+                  type="number"
+                  value={row.balance}
+                  onChange={(e) => updateRow(i, "balance", e.target.value)}
+                  className="w-full border rounded px-2 py-2 text-sm min-h-[44px]"
+                  placeholder="340000"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-500">As At</label>
+                <input
+                  type="date"
+                  value={row.asAtDate}
+                  onChange={(e) => updateRow(i, "asAtDate", e.target.value)}
+                  className="w-full border rounded px-2 py-2 text-sm min-h-[44px]"
+                />
+              </div>
+            </div>
           </div>
         </div>
       ))}
+
       <div className="flex gap-3">
         <button
           onClick={addRow}
@@ -146,7 +216,7 @@ export function AddBalanceForm({ onSaved }: AddBalanceFormProps) {
       <button
         onClick={saveAll}
         disabled={saving}
-        className="w-full py-2 bg-accent text-white rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors"
+        className="w-full py-2.5 min-h-[44px] bg-accent text-white rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors"
       >
         {saving ? "Saving..." : "Save All"}
       </button>

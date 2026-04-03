@@ -21,6 +21,8 @@ interface TaskTableProps {
   tasks: Task[];
   onEdit: (task: Task) => void;
   onPrint: (task: Task) => void;
+  hasFilters?: boolean;
+  onClearFilters?: () => void;
 }
 
 function priorityBadge(priority: string) {
@@ -75,12 +77,43 @@ function sortTasks(tasks: Task[]): Task[] {
   });
 }
 
-export function TaskTable({ tasks, onEdit, onPrint }: TaskTableProps) {
+function EmptyState({ hasFilters, onClearFilters }: { hasFilters: boolean; onClearFilters?: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 px-4">
+      <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center max-w-sm">
+        <p className="text-slate-500 text-sm">
+          {hasFilters ? "No tasks match your filters" : "No tasks yet"}
+        </p>
+        {hasFilters && onClearFilters ? (
+          <button
+            onClick={onClearFilters}
+            className="text-accent text-sm font-medium mt-2 hover:underline"
+          >
+            Clear filters
+          </button>
+        ) : (
+          <p className="text-slate-400 text-xs mt-1">Tap + to create one</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function TaskTable({ tasks, onEdit, onPrint, hasFilters = false, onClearFilters }: TaskTableProps) {
   const sorted = sortTasks(tasks);
+
+  if (sorted.length === 0) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+        <EmptyState hasFilters={hasFilters} onClearFilters={onClearFilters} />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-slate-50">
@@ -94,61 +127,95 @@ export function TaskTable({ tasks, onEdit, onPrint }: TaskTableProps) {
             </tr>
           </thead>
           <tbody>
-            {sorted.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="text-center py-8 text-slate-400">
-                  No tasks found
-                </td>
-              </tr>
-            ) : (
-              sorted.map((task) => {
-                const overdue = isOverdue(task);
-                return (
-                  <tr key={task.id} className="border-b last:border-b-0 hover:bg-slate-50 transition-colors">
-                    <td className="px-4 py-3 font-mono text-xs text-slate-600">
-                      {formatTaskNumber(task.taskNumber)}
-                    </td>
-                    <td className="px-4 py-3 text-slate-900 font-medium max-w-[250px] truncate">
-                      {task.title}
-                    </td>
-                    <td className="px-4 py-3">{priorityBadge(task.priority)}</td>
-                    <td className="px-4 py-3">{statusBadge(task.status)}</td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {task.responsible?.name || <span className="text-slate-300">&mdash;</span>}
-                    </td>
-                    <td className={`px-4 py-3 ${overdue ? "text-red-600 font-medium" : "text-slate-600"}`}>
-                      {task.dueDate
-                        ? new Date(task.dueDate).toLocaleDateString("en-ZA")
-                        : <span className="text-slate-300">&mdash;</span>}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => onPrint(task)}
-                          className="text-slate-400 hover:text-accent transition-colors"
-                          title="Print Work Order"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => onEdit(task)}
-                          className="text-slate-400 hover:text-accent transition-colors"
-                          title="Edit Task"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+            {sorted.map((task) => {
+              const overdue = isOverdue(task);
+              return (
+                <tr key={task.id} className="border-b last:border-b-0 hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs text-slate-600">
+                    {formatTaskNumber(task.taskNumber)}
+                  </td>
+                  <td className="px-4 py-3 text-slate-900 font-medium max-w-[250px] truncate">
+                    {task.title}
+                  </td>
+                  <td className="px-4 py-3">{priorityBadge(task.priority)}</td>
+                  <td className="px-4 py-3">{statusBadge(task.status)}</td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {task.responsible?.name || <span className="text-slate-300">&mdash;</span>}
+                  </td>
+                  <td className={`px-4 py-3 ${overdue ? "text-red-600 font-medium" : "text-slate-600"}`}>
+                    {task.dueDate
+                      ? new Date(task.dueDate).toLocaleDateString("en-ZA")
+                      : <span className="text-slate-300">&mdash;</span>}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => onPrint(task)}
+                        className="text-slate-400 hover:text-accent transition-colors p-1"
+                        title="Print Work Order"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => onEdit(task)}
+                        className="text-slate-400 hover:text-accent transition-colors p-1"
+                        title="Edit Task"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile card view */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {sorted.map((task, i) => {
+          const overdue = isOverdue(task);
+          return (
+            <div
+              key={task.id}
+              className="p-4 active:bg-slate-50 transition-colors animate-fade-in-up cursor-pointer"
+              style={{ animationDelay: `${i * 60}ms` }}
+              onClick={() => onEdit(task)}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-mono text-xs text-slate-400">{formatTaskNumber(task.taskNumber)}</span>
+                {priorityBadge(task.priority)}
+              </div>
+              <p className="text-sm font-medium text-slate-900 mb-1">{task.title}</p>
+              {task.responsible && (
+                <p className="text-xs text-slate-400 mb-2">{task.responsible.name}</p>
+              )}
+              <div className="flex items-center justify-between">
+                {statusBadge(task.status)}
+                <div className="flex items-center gap-3">
+                  {task.dueDate && (
+                    <span className={`text-xs ${overdue ? "text-red-600 font-medium" : "text-slate-400"}`}>
+                      {new Date(task.dueDate).toLocaleDateString("en-ZA")}
+                    </span>
+                  )}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onPrint(task); }}
+                    className="text-slate-400 hover:text-accent p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

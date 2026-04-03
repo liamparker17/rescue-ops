@@ -9,6 +9,7 @@ import { CreditorTable } from "./CreditorTable";
 import { BalanceSheet } from "./BalanceSheet";
 import { SlideOver } from "./SlideOver";
 import { AddBalanceForm } from "./AddBalanceForm";
+import { FirstVisitHint } from "@rescue-ops/shared";
 
 interface DashboardClientProps {
   orgName: string;
@@ -59,10 +60,10 @@ export function DashboardClient({ orgName, data, pipelineUrl }: DashboardClientP
 
       {/* Hero Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <MetricCard label="Cash Position" value={data.metrics.cashPosition} />
-        <MetricCard label="Total Creditor Exposure" value={data.metrics.totalCreditorExposure} />
-        <MetricCard label="Solvency Ratio" value={data.metrics.solvencyRatio} format="ratio" colorLogic="solvency" />
-        <MetricCard label="Monthly Burn Rate" value={data.metrics.monthlyBurnRate} />
+        <MetricCard label="Cash Position" value={data.metrics.cashPosition} delay={0} />
+        <MetricCard label="Total Creditor Exposure" value={data.metrics.totalCreditorExposure} delay={100} />
+        <MetricCard label="Solvency Ratio" value={data.metrics.solvencyRatio} format="ratio" colorLogic="solvency" delay={200} />
+        <MetricCard label="Monthly Burn Rate" value={data.metrics.monthlyBurnRate} delay={300} />
       </div>
 
       {/* Charts Row */}
@@ -73,8 +74,12 @@ export function DashboardClient({ orgName, data, pipelineUrl }: DashboardClientP
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 relative">
           <CreditorTable creditors={data.top10} pipelineUrl={pipelineUrl} />
+          <FirstVisitHint
+            storageKey="rescue-ops-triage-hints-seen"
+            message="Tap a creditor to see their pipeline status"
+          />
         </div>
         <div className="lg:col-span-2">
           <BalanceSheet data={data.balanceSheet} />

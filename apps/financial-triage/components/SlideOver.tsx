@@ -28,17 +28,17 @@ export function SlideOver({ open, onClose, title, children, width = "max-w-md" }
       <div className="fixed inset-0 bg-black/20" onClick={onClose} />
       <div
         ref={panelRef}
-        className={`relative ${width} w-full bg-white shadow-xl overflow-y-auto`}
+        className={`relative w-full ${width} md:${width} bg-white shadow-xl overflow-y-auto animate-slide-in-right max-md:!max-w-none`}
       >
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="sticky top-0 bg-white flex items-center justify-between p-4 md:p-6 border-b z-10">
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-4 md:p-6">{children}</div>
       </div>
     </div>
   );
